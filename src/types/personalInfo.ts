@@ -12,5 +12,5 @@ export const personalInfo: Mydata = {
     github: "@Anabiz",
     email: "anabizconcept9@gmail.com",
     mobile: "08065661350",
-    twitter: "@anabiz1"
+    twitter: "@Anabiz1"
 }
