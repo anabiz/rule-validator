@@ -8,7 +8,6 @@ export const ruleEvaluator = (condition: string, conditionValue: number, dataFil
         case "gt" :
             return  dataFileValue > conditionValue;
         case "gte" : 
-            console.log("hhhhhh")
             return  dataFileValue >= conditionValue;
         default :
            return false;          
