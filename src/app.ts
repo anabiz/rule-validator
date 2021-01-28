@@ -13,15 +13,13 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(checkValidJsonPayload);
 app.use("/", Route);
 
 // catch 404 and forward to error handler
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
-
-app.use(checkValidJsonPayload);
 
 // error handler
 app.use(function (err: HttpError, req: Request, res: Response) {
