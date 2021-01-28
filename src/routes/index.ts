@@ -1,14 +1,12 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { myData } from "../controller/myData";
-
+import { validateRule } from "../controller/validateRule";
 const router = Router();
 
 /* GET home page. */
 router.get("/", myData);
 
 /* Post validation data */
-router.post("/validate-rule", (_req:Request, res: Response)=>{
-    res.status(200).json({data:"hello rule validation"})
-});
+router.post("/validate-rule", validateRule);
 
 export default router;
