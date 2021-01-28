@@ -1,10 +1,10 @@
 
 interface Mydata {
-    name: String,
-    github: String,
-    email: String,
-    mobile: String,
-    twitter: String
+    name: string,
+    github: string,
+    email: string,
+    mobile: string,
+    twitter: string
 }
 
 export const personalInfo: Mydata = {
