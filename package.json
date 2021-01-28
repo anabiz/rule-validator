@@ -7,7 +7,7 @@
     "clean": "npx rimraf ./dist/",
     "fix": "eslint --fix '**/*.ts'",
     "lint": "eslint '**/*.ts'",
-    "start": "yarn tsc && bin/www",
+    "start": "node .bin/www",
     "dev": "tsc --watch & nodemon --ignore bin/www"
   },
   "dependencies": {
