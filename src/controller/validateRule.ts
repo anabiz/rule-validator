@@ -7,10 +7,17 @@ import { checkType } from "../util/checkTypes";
 export const validateRule = (req: Request, res: Response) => {
 
     const payload: payload = req.body;
+    if(typeof payload.rule !== "object" && payload.rule){
+        res.status(400).json({
+            message: `rule should be an object.`,
+            "status": "error",
+            "data": null
+        });
+        return;
+    }
     const fieldsValidationResult: string | boolean = checkRequiredFields(payload);
-    const typesValidationResult: string[] | boolean = checkType(payload);
-
     if ( fieldsValidationResult === true) {
+        const typesValidationResult: string[] | boolean = checkType(payload);
         if(typesValidationResult !== true){
             const [field, fieldType] = typesValidationResult;
             res.status(400).json({

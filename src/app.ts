@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import Route from "./routes"; 
+import { checkValidJsonPayload } from "./middleware/checkValidJsonPayload";
 
 
 const app = express();
@@ -19,6 +20,8 @@ app.use("/", Route);
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
+
+app.use(checkValidJsonPayload);
 
 // error handler
 app.use(function (err: HttpError, req: Request, res: Response) {
