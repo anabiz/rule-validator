@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build":"yarn tsc",
     "clean": "npx rimraf ./dist/",
     "fix": "eslint --fix '**/*.ts'",
     "lint": "eslint '**/*.ts'",
