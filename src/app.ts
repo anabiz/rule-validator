@@ -1,6 +1,6 @@
 import createError, { HttpError } from "http-errors";
 import express, { Request, Response, NextFunction } from "express";
-import cookieParser from "cookie-parser";
+
 import logger from "morgan";
 import Route from "./routes"; 
 import { checkValidJsonPayload } from "./middleware/checkValidJsonPayload";
@@ -12,7 +12,6 @@ app.disable("x-powered-by");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(checkValidJsonPayload);
 app.use("/", Route);
 
