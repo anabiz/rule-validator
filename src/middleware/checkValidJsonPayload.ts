@@ -4,7 +4,7 @@ import { errorResponse } from "../types/errorResponse"
 
 export function checkValidJsonPayload(err:HttpError, _req:Request, res:Response, next:NextFunction) {
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-      // Handle the error here
+      // Handles errors
       errorResponse.message = "Invalid JSON payload passed.";
       res.status(400).send(errorResponse);
     }

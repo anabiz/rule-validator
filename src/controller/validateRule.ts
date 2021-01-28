@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { sliceString } from "../util/sliceString";
 import { checkRequiredFields } from "../util/checkRequiredFields";
-import { payload } from "../types/payload";
+// import { payload } from "../types/payload";
 import { checkType } from "../util/checkTypes";
 import { hasOwnField } from "../util/hasOwnField";
 import { errorResponse } from "../types/errorResponse";
@@ -10,22 +10,22 @@ import { getResponse } from "../util/getResponse";
 
 export const validateRule = (req: Request, res: Response) => {
 
-    const payload: payload = req.body;
+    const payload = req.body;
     if (typeof payload.rule !== "object" && payload.rule) {
         errorResponse.message = `rule should be an object.`,
             res.status(400).json(errorResponse);
         return;
     }
-    const fieldsValidationResult: string | boolean = checkRequiredFields(payload);
+    const fieldsValidationResult = checkRequiredFields(payload);
     if (fieldsValidationResult === true) {
-        const typesValidationResult: string[] | boolean = checkType(payload);
+        const typesValidationResult = checkType(payload);
         if (typesValidationResult !== true) {
             const [field, fieldType] = typesValidationResult;
             errorResponse.message = `${field} should be ${fieldType}.`,
                 res.status(400).json(errorResponse);
             return;
         }
-        const field: string = payload.rule.field;
+        const field = payload.rule.field;
         if (field.includes(".")) {
             const [firstField, secondField] = sliceString(field);
             if (!hasOwnField(payload.data, firstField)) {
@@ -38,38 +38,54 @@ export const validateRule = (req: Request, res: Response) => {
                 res.status(400).json(errorResponse);
                 return;
             }
-            const value: number = payload['data'][firstField][secondField];
-            const isSuccessful: boolean = ruleEvaluator(payload.rule.condition, payload.rule.condition_value, value);
+            const value = payload['data'][firstField][secondField];
+            const isSuccessful = ruleEvaluator(payload.rule.condition, payload.rule.condition_value, value);
             if (isSuccessful) {
-                let result = getResponse(firstField,payload.rule.condition,"success",false,payload.rule.condition_value,payload['data'][firstField][secondField]);
+                let result = getResponse(payload.rule.field, payload.rule.condition, "success", false, payload.rule.condition_value, payload['data'][firstField][secondField]);
                 res.status(200).json(result);
                 return;
             } else {
-                let result =  getResponse(firstField,payload.rule.condition,"error",true,payload.rule.condition_value,payload['data'][firstField][secondField]);
+                let result = getResponse(payload.rule.field, payload.rule.condition, "error", true, payload.rule.condition_value, payload['data'][firstField][secondField]);
                 res.status(400).json(result);
                 return;
             }
 
         } else {
-            const field: string =  payload.rule.field
-            //console.log(hasOwnField(payload.data, payload.rule.field))
+            const field = payload.rule.field;
             if ((typeof payload.data === 'object') && hasOwnField(payload.data, field)) {
-                const value: number = payload['data'][field];
-                const isSuccessful: boolean = ruleEvaluator(payload.rule.condition, payload.rule.condition_value, value);
-                if(isSuccessful){
-                    let result = getResponse(field,payload.rule.condition,"success",false,payload.rule.condition_value,payload['data'][field]);
+                const value = payload['data'][field];
+                const isSuccessful = ruleEvaluator(payload.rule.condition, payload.rule.condition_value, value);
+                if (isSuccessful) {
+                    let result = getResponse(field, payload.rule.condition, "success", false, payload.rule.condition_value, payload['data'][field]);
                     res.status(200).json(result);
                     return;
-                }else{
-                    let result =  getResponse(field,payload.rule.condition,"error",true,payload.rule.condition_value,payload['data'][field]);
+                } else {
+                    let result = getResponse(field, payload.rule.condition, "error", true, payload.rule.condition_value, payload['data'][field]);
                     res.status(400).json(result);
                     return;
                 }
-            } else if (payload.data.isArray()) {
-                //if()
-                errorResponse.message = `field ${payload.rule.field} is missing from data.`,
-                    res.status(400).json(errorResponse);
+            } else if ((typeof payload.data === 'object') && !hasOwnField(payload.data, field) && !Array.isArray(payload.data)) {
+                errorResponse.message = `field ${payload.rule.field} is missing from data.`;
+                res.status(400).json(errorResponse);
                 return;
+            } else {
+                const field = payload.rule.field;
+                const fieldToNumber = Number(payload.rule.field);
+                if (payload.data[fieldToNumber]) {
+                    if (payload.data[fieldToNumber] === payload.rule.condition_value) {
+                        let result = getResponse(field, payload.rule.condition, "success", false, payload.rule.condition_value, payload['data'][field]);
+                        res.status(200).json(result);
+                        return;
+                    } else {
+                        let result = getResponse(field, payload.rule.condition, "error", true, payload.rule.condition_value, payload['data'][field]);
+                        res.status(400).json(result);
+                        return;
+                    }
+                } else {
+                    errorResponse.message = `field ${field} is missing from data.`,
+                        res.status(400).json(errorResponse);
+                    return;
+                }
             }
         }
     } else {
@@ -77,6 +93,4 @@ export const validateRule = (req: Request, res: Response) => {
             res.status(400).json(errorResponse);
         return;
     }
-    res.status(200).json(payload);
-    return;
 };

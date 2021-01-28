@@ -1,4 +1,5 @@
 
 export const hasOwnField = (obj: any, field: string) =>{
-return obj.hasOwnProperty(field);
+    if(Array.isArray(obj)) return false;
+    return obj.hasOwnProperty(field);
 }
